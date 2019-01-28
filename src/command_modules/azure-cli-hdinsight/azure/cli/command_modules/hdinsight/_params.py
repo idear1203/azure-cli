@@ -20,7 +20,7 @@ known_role_types = ["headnode", "workernode", "zookeepernode", "edgenode"]
 
 # pylint: disable=too-many-statements
 def load_arguments(self, _):
-    from ._completers import subnet_completion_list
+    from ._completers import subnet_completion_list, cluster_admin_account_completion_list
     from knack.arguments import CLIArgumentType
     from azure.mgmt.hdinsight.models import Tier, JsonWebKeyEncryptionAlgorithm
     node_size_type = CLIArgumentType(arg_group='Node',
@@ -123,6 +123,7 @@ def load_arguments(self, _):
                    help='The domain admin password. '
                         'Required only when create cluster with Enterprise Security Package.')
         c.argument('cluster_admin_account', arg_group='Domain Service',
+                   completer=cluster_admin_account_completion_list,
                    help='The domain user account that will have admin privileges on the cluster. '
                         'Required only when create cluster with Enterprise Security Package.')
         c.argument('ldaps_urls', arg_group='Domain Service', nargs='+',

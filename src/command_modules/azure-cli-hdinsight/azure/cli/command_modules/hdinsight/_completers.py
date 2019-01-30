@@ -19,9 +19,14 @@ def subnet_completion_list(cmd, prefix, namespace, **kwargs):  # pylint: disable
 
 @Completer
 def cluster_admin_account_completion_list(cmd, prefix, namespace, **kwargs):  # pylint: disable=unused-argument
-    #return []
     client = cf_graph(cmd.cli_ctx)
     cluster_admin_account = prefix or ''
+    user_names = []
     if cluster_admin_account:
-        return [r.user_principal_name for r in
-                client.users.list(filter="startswith(userPrincipalName, '{}')".format(cluster_admin_account))]
+        user_list = client.users.list(filter="startswith(userPrincipalName, '{}')".format(cluster_admin_account)) \
+                                .advance_page()
+        user_names = [r.mail if r.user_type == "Guest" else r.user_principal_name for r in user_list]
+    else:
+        user_list = client.users.list().advance_page()
+        user_names = [r.mail if r.user_type == "Guest" else r.user_principal_name for r in user_list]
+    return user_names
